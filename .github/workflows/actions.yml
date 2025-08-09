@@ -1,0 +1,33 @@
+name: GitHub Actions
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  release:
+    types:
+      - published
+
+permissions: {}
+
+jobs:
+  build:
+    needs:
+      - test
+      - lint
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      # - uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+      # - uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 22
+      #     check-latest: true
+
+      - run: sudo apt install build-essential devscripts debhelper debmake
+      - run: ./scripts/build.sh
